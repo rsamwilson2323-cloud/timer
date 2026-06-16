@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Countdown Timer with Alarm</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: white;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .timer-box {
+        background: rgba(0,0,0,0.4);
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        width: 320px;
+        box-shadow: 0 0 20px black;
+    }
+
+    h1 {
+        margin-bottom: 15px;
+    }
+
+    input {
+        width: 70px;
+        padding: 8px;
+        font-size: 18px;
+        text-align: center;
+        border-radius: 8px;
+        border: none;
+        margin: 5px;
+    }
+
+    #display {
+        font-size: 40px;
+        margin: 20px 0;
+    }
+
+    button {
+        padding: 10px 18px;
+        font-size: 16px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .start { background: #4CAF50; color: white; }
+    .pause { background: #FF9800; color: white; }
+    .reset { background: #F44336; color: white; }
+
+    button:hover {
+        opacity: 0.85;
+    }
+</style>
+</head>
+<body>
+
+<div class="timer-box">
+    <h1>⏰ Countdown Timer</h1>
+
+    <div>
+        <input type="number" id="hours" placeholder="HH" min="0">
+        <input type="number" id="minutes" placeholder="MM" min="0" max="59">
+        <input type="number" id="seconds" placeholder="SS" min="0" max="59">
+    </div>
+
+    <div id="display">00:00:00</div>
+
+    <button class="start" onclick="startTimer()">Start</button>
+    <button class="pause" onclick="pauseTimer()">Pause</button>
+    <button class="reset" onclick="resetTimer()">Reset</button>
+</div>
+
+<!-- Alarm Sound -->
+<audio id="alarm" loop>
+    <source src="https://www.soundjay.com/buttons/sounds/beep-09.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let totalSeconds = 0;
+let timer = null;
+let running = false;
+
+function startTimer() {
+    if (!running) {
+        if (totalSeconds === 0) {
+            const h = parseInt(document.getElementById("hours").value) || 0;
+            const m = parseInt(document.getElementById("minutes").value) || 0;
+            const s = parseInt(document.getElementById("seconds").value) || 0;
+
+            totalSeconds = h * 3600 + m * 60 + s;
+
+            if (totalSeconds <= 0) {
+                alert("Please enter a valid time!");
+                return;
+            }
+        }
+
+        running = true;
+        timer = setInterval(countdown, 1000);
+    }
+}
+
+function countdown() {
+    if (totalSeconds <= 0) {
+        clearInterval(timer);
+        running = false;
+        document.getElementById("alarm").play();
+        return;
+    }
+
+    totalSeconds--;
+
+    let h = Math.floor(totalSeconds / 3600);
+    let m = Math.floor((totalSeconds % 3600) / 60);
+    let s = totalSeconds % 60;
+
+    document.getElementById("display").innerText =
+        String(h).padStart(2, "0") + ":" +
+        String(m).padStart(2, "0") + ":" +
+        String(s).padStart(2, "0");
+}
+
+function pauseTimer() {
+    clearInterval(timer);
+    running = false;
+}
+
+function resetTimer() {
+    clearInterval(timer);
+    running = false;
+    totalSeconds = 0;
+    document.getElementById("display").innerText = "00:00:00";
+    document.getElementById("alarm").pause();
+    document.getElementById("alarm").currentTime = 0;
+}
+</script>
+
+</body>
+</html>
